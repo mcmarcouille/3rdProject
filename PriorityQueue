@@ -1,0 +1,80 @@
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+
+/**
+ * An implementation of the MinPriorityQueueADT interface. This implementation stores FileLine objects.
+ * See MinPriorityQueueADT.java for a description of each method. 
+ *
+ */
+public class FileLinePriorityQueue implements MinPriorityQueueADT<FileLine> {
+    private Comparator<FileLine> cmp;
+    private int maxSize, size;
+    private FileLine[] heap;
+
+    public FileLinePriorityQueue(int initialSize, Comparator<FileLine> cmp) {
+    	this.cmp = cmp;
+    	heap = (FileLine[]) new Object[initialSize + 1];
+        size = 0;
+        maxSize = initialSize;
+    }
+
+    public FileLine removeMin() throws PriorityQueueEmptyException, NoSuchElementException{
+    	if (isEmpty()) throw new NoSuchElementException();
+        swap(1, size);
+        FileLine min = heap[size--];
+        lower(1);
+        heap[size+1] = null;
+        if ((size > 0) && (size == (heap.length - 1) / 4)) resize(heap.length  / 2);
+        return min;
+    }
+
+    public void insert(FileLine fl) throws PriorityQueueFullException {
+    	 if (size == heap.length - 1) resize(2 * heap.length);
+         heap[++size] = fl;
+         raise(size);
+    }
+
+    public boolean isEmpty() {
+		return size == 0;
+    }
+    
+    private void resize(int capacity) {
+        assert capacity > size;
+        FileLine[] temp = (FileLine[]) new Object[capacity];
+        for (int i = 1; i <= size; i++) {
+            temp[i] = heap[i];
+        }
+        heap = temp;
+    }
+    
+    private void swap(int i, int j) {
+        FileLine swch = heap[i];
+        heap[i] = heap[j];
+        heap[j] = swch;
+    }
+    private void raise(int k) {
+        while (k > 1 && greater(k/2, k)) {
+            swap(k, k/2);
+            k = k/2;
+        }
+    }
+    
+    private void lower(int k) {
+        while (2*k <= size) {
+            int j = 2*k;
+            if (j < size && greater(j, j+1)) j++;
+            if (!greater(k, j)) break;
+            swap(k, j);
+            k = j;
+        }
+    }
+    
+    private boolean greater(int i, int j) {
+        if (cmp == null) {
+            return ((Comparable<FileLine>) heap[i]).compareTo(heap[j]) > 0;
+        }
+        else {
+            return cmp.compare(heap[i], heap[j]) > 0;
+        }
+    }
+}
