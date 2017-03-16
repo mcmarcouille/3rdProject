@@ -6,37 +6,50 @@ import java.util.Comparator;
  *
  */
 public class FileLinePriorityQueue implements MinPriorityQueueADT<FileLine> {
-
+    // TODO
+	int maxSize;
     private Comparator<FileLine> cmp;
-    private int maxSize;
-    private int numItems;
     private FileLine[] queue;
-    
+
     public FileLinePriorityQueue(int initialSize, Comparator<FileLine> cmp) {
 		this.cmp = cmp;
 		maxSize = initialSize;
-		numItems = 0;
-		queue = new FileLine[maxSize];
-
+		
+		// TODO
+		queue = new FileLine[initialSize];
+    }
+    
+    private void reheapify(int index){
+    	if(index == 1)
+    		return;
+    	if(cmp.compare(queue[index],queue[index/2])<0){
+    		 FileLine temp = queue[index];
+    	     queue[index] = queue[index/2];
+    	     queue[index/2]= temp;
+    	     reheapify(index/2);
+    	}
     }
 
     public FileLine removeMin() throws PriorityQueueEmptyException {
-		if (numItems <= 0){
-			throw new PriorityQueueEmptyException();
-		}
-		FileLine tempStore = queue[0];
-		queue[0] = null;
-		numItems--;
-
-
-		return tempStore;
+		// TODO
+    	if(0 == maxSize)
+    		throw new PriorityQueueEmptyException();
+    	FileLine temp = queue[1];
+    	queue[1] = queue[maxSize];
+    	reheapify(maxSize);
+        return temp;
     }
 
     public void insert(FileLine fl) throws PriorityQueueFullException {
 		// TODO
+    	if(maxSize+1 == queue.length)
+    		throw new PriorityQueueFullException();
+    	queue[maxSize+1] = fl;
+    	reheapify(maxSize+1);
     }
 
     public boolean isEmpty() {
-		return numItems == 0;
+		// TODO
+    	return queue.length ==0;
     }
 }
